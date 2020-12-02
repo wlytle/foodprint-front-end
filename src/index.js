@@ -5,7 +5,8 @@
   function getAllRecipes() {
     fetch(recipiesUrl)
       .then((resp) => resp.json())
-      .then((recipes) => showRecipeList(recipes));
+      .then((recipes) => showRecipeList(recipes))
+      .catch((err) => console.log(err));
   }
 
   // select recpies that are public and render them
