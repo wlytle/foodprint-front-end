@@ -25,7 +25,6 @@
 
   // create an li for each recipe
   function renderRecipe(recipe) {
-    const li = document.createElement("li");
     const btn = document.createElement("BUTTON");
 
     btn.type = "button";
