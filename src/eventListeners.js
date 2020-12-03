@@ -67,7 +67,7 @@ function showRecipeIngredient(ing) {
     //if no data, just say so
   } else {
     const declaration = document.createElement("span");
-    declaration.textContent = `No climate data available for ${name}`;
+    declaration.textContent = `No climate data available`;
     li.append(declaration);
   }
   ul.appendChild(li);
