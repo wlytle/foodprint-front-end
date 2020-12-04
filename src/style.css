@@ -1,6 +1,16 @@
 .list-group-item  {
     font-size: 12px;
 }
+/* Style special buttons in side nav bar */
+.list-highlight {
+    background-color: rgba(161, 196, 67, 0.8);
+}
+.list-highlight:hover {
+    background-color: rgba(161, 196, 67, 1);
+}
+.list-highlight:focus {
+    background-color: rgba(161, 196, 67, 0.8);
+}
 .jumbotron {
     background-color: rgba(149, 204, 3, 0.4);
 }

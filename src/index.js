@@ -23,7 +23,7 @@
     }
   }
 
-  // create an li for each recipe
+  // create an button for each recipe
   function renderRecipe(recipe) {
     const btn = document.createElement("BUTTON");
 

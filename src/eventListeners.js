@@ -1,3 +1,4 @@
+//set global object to keep track of emissions totals
 const RECIPE_TOTALS = {
   ghg: 0,
   h2o: 0,
@@ -7,7 +8,9 @@ const RECIPE_TOTALS = {
 document.addEventListener("DOMContentLoaded", () => {
   const list = document.getElementById("recipe-list");
 
-  list.addEventListener("click", getRecipe);
+  list.addEventListener("click", (e) => {
+    e.target.id === "create-recipe-btn" ? createRecipe(e) : getRecipe(e);
+  });
 });
 
 //show recipe after being selected from the side bar
