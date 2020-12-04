@@ -29,12 +29,17 @@ async function showRecipe(recipe) {
   div.innerHTML = "";
   const h1 = document.createElement("h1");
   const h4 = document.createElement("h4");
-  const ingredientList = document.createElement("ul");
+  const table = document.createElement("table");
+  const ingredientList = document.createElement("tbody");
   ingredientList.id = "ing-list";
+  table.className = "table table-hover";
   const p = document.createElement("p");
   const img = document.createElement("img");
 
-  div.append(h1, h4, ingredientList, p, img);
+  table.addEventListener("click", editRecipeIngredient);
+
+  table.appendChild(ingredientList);
+  div.append(h1, h4, table, p, img);
 
   //store all ingredient promsies in an array
   const promises = [];
@@ -46,13 +51,13 @@ async function showRecipe(recipe) {
   await Promise.all(promises);
 
   //after all ingredients accessed and added to DOM dispaly totals
-  h1.textContent = `${recipe.title} - ${RECIPE_TOTALS.ghg.toFixed(
+  h1.innerHTML = `${recipe.title} - ${RECIPE_TOTALS.ghg.toFixed(
     2
-  )} kg of CO2 eq`;
+  )} kg of CO<sub>2</sub>Eq`;
   h1.id = "title";
-  h4.textContent = `Serves ${recipe.yield} - ${(
+  h4.innerHTML = `Serves ${recipe.yield} - ${(
     RECIPE_TOTALS.ghg / recipe.yield
-  ).toFixed(2)} kg CO2eq per serving`;
+  ).toFixed(2)} kg CO<sub>2</sub>Eq per serving`;
   h4.id = "yield";
   p.textContent = recipe.instructions;
   img.src = recipe.image;
@@ -69,21 +74,15 @@ function getRecipeIngredient(id) {
 // then append these to the dom if they exist
 function showRecipeIngredient(ing) {
   const ingredient = ing.ingredient;
-  const ul = document.getElementById("ing-list");
-  const li = document.createElement("li");
-  const recipe = document.createElement("span");
+  const table = document.getElementById("ing-list");
+  const tr = document.createElement("tr");
+  const recipe = document.createElement("td");
 
   recipe.textContent = ing.whole_line;
   recipe.id = "whole-line";
 
-  li.appendChild(recipe);
-
   // Do we have data for this ingredient?
   if (ingredient.greenhouse_gass) {
-    const ghg = document.createElement("span");
-    const h2o = document.createElement("span");
-    const eut = document.createElement("span");
-
     //calculate acutal emissions for quantity of ingredients used
     const [ghgEmission, water, eutrophication] = calculateEmissions(ing);
 
@@ -94,22 +93,32 @@ function showRecipeIngredient(ing) {
 
     // add emissions data to dom
     if (ghgEmission.flag) {
+      const ghg = document.createElement("td");
+      ghg.colSpan = "3";
       ghg.textContent = ghgEmission.flag;
+      tr.append(recipe, ghg);
     } else {
-      ghg.textContent = ` ${ghgEmission.total.toFixed(2)} kg of Co2Eq `;
+      const ghg = document.createElement("td");
+      const h2o = document.createElement("td");
+      const eut = document.createElement("td");
+
+      ghg.innerHTML = ` ${ghgEmission.total.toFixed(
+        2
+      )} kg of CO<sub>2</sub>Eq `;
       h2o.textContent = `${water.toFixed(2)} L of water `;
-      eut.textContent = `${eutrophication.toFixed(2)} g`;
+      eut.innerHTML = `${eutrophication.toFixed(2)} g PO<sub>4</sub>eq`;
+      tr.append(recipe, ghg, h2o, eut);
     }
-    li.append(ghg, h2o, eut);
 
     //if no data, just say so
   } else {
-    const declaration = document.createElement("span");
+    const declaration = document.createElement("td");
     declaration.textContent = `  No climate data available`;
-    li.append(declaration);
+    declaration.colSpan = "3";
+    tr.append(recipe, declaration);
   }
 
-  ul.appendChild(li);
+  table.appendChild(tr);
 }
 
 //connvert ingredient units to kg
@@ -182,4 +191,12 @@ function calculateEmissions(ing) {
   }
 
   return [ghg, h2o, eut];
+}
+
+////////////
+////////////////
+///////////////
+// come back to this!
+function editRecipeIngredient(e) {
+  if (currentTarget.tagName != "TR") return;
 }
