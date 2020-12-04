@@ -1,7 +1,8 @@
 //create and append a form to create a new recipe
-function createRecipe({ target }) {
-  //Get man div to show form
+function createRecipe() {
+  //Get main div to show form and clear out anything that's there
   const div = document.getElementById("main-show");
+  div.innerHTML = "";
   // Create form sections
   const formDiv1 = document.createElement("div");
   const formDiv2 = document.createElement("div");
@@ -13,7 +14,9 @@ function createRecipe({ target }) {
   //give form sections classes
   formDiv1.className = "form-group";
   formDiv2.className = "form-group";
+  formDiv2.id = "yield-div";
   formDiv3.className = "form-group";
+  formDiv3.id = "add-btn-div";
   formDiv4.className = "form-group";
   formDiv5.className = "form-group";
   formDiv6.className = "form-group form-check-inline";
@@ -44,11 +47,13 @@ function createRecipe({ target }) {
   yield.type = "number";
   yield.name = "yield";
   yield.className = "form-control";
+  yield.id = "yield-input";
   instructionsLabel.textContent = "Directions";
   instructions.name = "instructions";
   instructions.className = "form-control";
   addBtn.textContent = "Add Ingredient";
   addBtn.className = "btn btn-primary";
+  addBtn.id = "add-btn";
   publicCheckLabel.textContent = "Make Public";
   publicCheckLabel.className = "form-check-label";
   imageLabel.textContent = "Image URL";
@@ -60,6 +65,7 @@ function createRecipe({ target }) {
   submit.type = "submit";
   submit.textContent = "Add Recipe";
   submit.className = "btn btn-primary";
+  submit.it = "submit-btn";
 
   //append form elements to appropriate secionts
   formDiv1.append(titleLabel, title);
@@ -75,11 +81,15 @@ function createRecipe({ target }) {
   form.append(formDiv1, formDiv2);
   addIngredientInput();
   form.append(formDiv3, formDiv4, formDiv5, formDiv6);
+
+  //add event listener to  handle all the things
+  form.addEventListener("click", handleFormClick);
 }
 
 // create and append a new recipe input field
 function addIngredientInput() {
   // create containment div
+  const ingdiv = document.createElement("div");
   const rowdiv1 = document.createElement("div");
   const rowdiv2 = document.createElement("div");
   const row1_coldiv1 = document.createElement("div");
@@ -140,6 +150,7 @@ function addIngredientInput() {
   display.className = "form-control";
   removeBtn.textContent = "Remove";
   removeBtn.className = "btn btn-danger";
+  removeBtn.id = "remove-btn";
 
   row1_coldiv1.appendChild(ingredientLabel);
   row1_coldiv2.appendChild(quantityLabel);
@@ -150,7 +161,11 @@ function addIngredientInput() {
   row2_coldiv2.appendChild(quantity);
   row2_coldiv3.appendChild(unit);
   row2_coldiv4.appendChild(display);
-  row2_coldiv5.appendChild(removeBtn);
+  //dont add remove button to first ingredient
+  const yield = document.getElementById("yield-div");
+  if (form.lastElementChild !== yield) {
+    row2_coldiv5.appendChild(removeBtn);
+  }
 
   rowdiv1.append(
     row1_coldiv1,
@@ -167,5 +182,33 @@ function addIngredientInput() {
     row2_coldiv5
   );
 
-  form.append(rowdiv1, rowdiv2);
+  //append ingredient item in correct location
+  const addbtn = document.getElementById("add-btn-div");
+  ingdiv.append(rowdiv1, rowdiv2);
+  //form.append(rowdiv1, rowdiv2);
+  form.lastElementChild === yield
+    ? form.append(ingdiv)
+    : form.insertBefore(ingdiv, addbtn);
+}
+
+function removeIngredientInput(target) {
+  //Remove input row with button, row with labels and surroundng div
+  target.parentNode.parentNode.parentNode.remove();
+}
+
+function handleFormClick(e) {
+  e.preventDefault();
+  switch (e.target.id) {
+    case "add-btn":
+      addIngredientInput();
+      break;
+    case "submit-btn":
+      console.log("submit");
+      break;
+    case "remove-btn":
+      removeIngredientInput(e.target);
+      break;
+    default:
+      return;
+  }
 }

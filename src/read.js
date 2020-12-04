@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const list = document.getElementById("recipe-list");
 
   list.addEventListener("click", (e) => {
-    e.target.id === "create-recipe-btn" ? createRecipe(e) : getRecipe(e);
+    e.target.id === "create-recipe-btn" ? createRecipe() : getRecipe(e);
   });
 });
 
