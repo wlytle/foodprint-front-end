@@ -1,6 +1,7 @@
 .list-group-item  {
     font-size: 12px;
 }
+
 /* Style special buttons in side nav bar */
 .list-highlight {
     background-color: rgba(161, 196, 67, 0.8);
@@ -11,6 +12,21 @@
 .list-highlight:focus {
     background-color: rgba(161, 196, 67, 0.8);
 }
+
 .jumbotron {
     background-color: rgba(149, 204, 3, 0.4);
 }
+
+/* Reomve silly validation icons */
+.form-control.is-invalid, .was-validated .form-control:invalid {
+    background-image: none;
+  }
+  
+  
+  .form-control.is-valid, .was-validated .form-control:valid  {
+    background-image: none;
+  }
+/* keep recipe image size in check */
+  .img-fluid {
+      max-height: 400px;
+  }
