@@ -16,24 +16,28 @@ function showLogin() {
   const signupBtn = document.createElement("BUTTON");
   const guestBtn = document.createElement("BUTTON");
   const signupDiv = document.createElement("div");
+  const invalidResponse = document.createElement("div");
+  const formGroup = document.createElement("div");
 
   // set element attributes
   h3.textContent = "Please sign in or";
   h4.append(guestBtn);
   form.id = "login-form";
   form.method = "post";
-  form.className = "needs-validation";
-  form.setAttribute("novalidate", "");
+  //form.className = "needs-validation";
+  //form.setAttribute("novalidate", "");
   usernameLabel.textContent = "Username:";
   username.type = "text";
   username.name = "username";
-  username.className = "form-control form-control-lg";
-  username.required = true;
+  username.className = "form-control";
+  //username.required = true;
+  username.id = "user-input";
   passwordLabel.textContent = "password:";
   password.type = "password";
   password.name = "password";
-  password.className = "form-control form-control-lg";
-  password.required = true;
+  password.className = "form-control";
+  //password.required = true;
+  password.id = "password-input";
   loginBtn.textContent = "LOGIN";
   loginBtn.className = "btn btn-outline-success";
   loginBtn.id = "login-btn";
@@ -44,14 +48,19 @@ function showLogin() {
   guestBtn.textContent = "Continue as guest";
   guestBtn.className = "btn btn-link btn-sm";
   guestBtn.id = "guest-btn";
+  invalidResponse.className = "invalid-feedback";
+  invalidResponse.textContent = "Incorrect Username or Password";
+  formGroup.className = "form-group";
+
+  formGroup.append(usernameLabel, username);
 
   signupDiv.appendChild(signupBtn);
 
   form.append(
-    usernameLabel,
-    username,
+    formGroup,
     passwordLabel,
     password,
+    invalidResponse,
     signupDiv,
     loginBtn
   );
@@ -67,14 +76,7 @@ function handleSignupClick(e) {
   e.preventDefault();
   switch (e.target.id) {
     case "login-btn":
-      // add validation checks
-      if (e.target.parentNode.checkValidity() === false) {
-        e.preventDefault();
-        e.stopPropagation();
-      } else {
-        // log-in user
-        loginUser(e);
-      }
+      loginUser(e);
       e.currentTarget.classList.add("was-validated");
       break;
     case "gues-btn":
@@ -92,18 +94,51 @@ function handleSignupClick(e) {
 function loginUser({ target }) {
   const user = target.parentNode;
   const body = {
-    username: user.username,
-    password: user.password,
+    username: user.username.value,
+    password: user.password.value,
   };
-  configObj = {
+
+  const configObj = {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
+      //"X-CSRF-Token": browser.cookies.get(),
     },
     body: JSON.stringify(body),
+    credentials: "include",
+    "Access-Control-Allow-Credentials": true,
   };
   fetch("http://localhost:3000/sessions", configObj)
     .then((resp) => resp.json())
-    .then((user) => console.log(user));
+    .then((session) => {
+      console.log(session);
+      if (session.error) {
+        const username = document.getElementById("user-input");
+        const password = document.getElementById("password-input");
+
+        username.setCustomValidity("invalid");
+        password.setCustomValidity("invalid");
+      }
+
+      redirectAfterLogIn();
+    });
+}
+
+function redirectAfterLogIn() {
+  const configObj = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      //"X-CSRF-Token": browser.cookies.get(),
+    },
+    credentials: "include",
+    "Access-Control-Allow-Credentials": true,
+  };
+  fetch("http://localhost:3000/UserRecipes", configObj)
+    .then((resp) => resp.json())
+    .then((test) => {
+      console.log(test);
+    });
 }

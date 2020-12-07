@@ -26,7 +26,7 @@ function getRecipe({ target }, id = null) {
       // if call is coming from nav bar, render the rcipe if its coming from an edit button render the form
       target.id === "edit-btn" ? createRecipe(recipe) : showRecipe(recipe);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.log(err.message));
 }
 
 //Display recipe in the center
@@ -125,12 +125,34 @@ function showRecipeIngredient(ing) {
       const h2o = document.createElement("td");
       const eut = document.createElement("td");
 
+      /// testing modal
+      const popover = document.createElement("BUTTON");
+
+      popover.className = "btn btn-primary";
+      popover.type = "button";
+      popover.dataset.target = "#exampleModal";
+      popover.dataset.toggle = "modal";
+      popover.textContent = "modal test";
+
+      let content = "";
+      for (const em in ghgEmission) {
+        content += `${em}: ${ghgEmission[em].toFixed(2)} kg of CO<sub>2</sub>Eq 
+        `;
+      }
+
+      const modal = buildModal(
+        `Life Cycle Emissions For ${ingredient.name}`,
+        content
+      );
+      ////
+
       ghg.innerHTML = ` ${ghgEmission.total.toFixed(
         2
       )} kg of CO<sub>2</sub>Eq `;
       h2o.textContent = `${water.toFixed(2)} L of water `;
       eut.innerHTML = `${eutrophication.toFixed(2)} g PO<sub>4</sub>eq`;
-      tr.append(recipe, ghg, h2o, eut);
+      popover.appendChild(ghg);
+      tr.append(recipe, ghg, h2o, eut, popover, modal);
     }
 
     //if no data, just say so
@@ -233,5 +255,31 @@ function calculateEmissions(ing) {
 ///////////////
 // come back to this!
 function editRecipeIngredient(e) {
-  if (currentTarget.tagName != "TR") return;
+  console.log(e.target);
+  //e.target.popover();
+}
+
+function buildModal(title, content) {
+  const modal = `<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">${title}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+       <p>${content}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>`;
+  const div = document.createElement("div");
+  div.innerHTML = modal;
+  return div;
 }
