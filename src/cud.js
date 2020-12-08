@@ -142,10 +142,11 @@ function createRecipe(recipe = null) {
 // create and append a new recipe input field
 function addIngredientInput(ing = null) {
   // set up values for pre-filling edit form
+
   const ingredientValue = ing?.ingredient?.name || "";
   const quantityValue = ing?.quantity || "";
   const unitValue = ing?.unit || "";
-  const typeValue = ing?.type || "";
+  const typeValue = ing?.ingredient_type?.name || "";
   const displayValue = ing?.whole_line || "";
   let removeId;
   ing ? (removeId = "delete-ri-btn") : (removeId = "remove-btn");
@@ -308,7 +309,10 @@ function addNewRecipe({ currentTarget }) {
   };
   fetch("http://localhost:3000/recipes", configObj)
     .then((resp) => resp.json())
-    .then((recipe) => showRecipe(recipe));
+    .then((recipe) => {
+      getAllRecipes();
+      showRecipe(recipe);
+    });
 }
 
 function getIngredientParams(currentTarget) {

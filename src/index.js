@@ -12,6 +12,7 @@
   // select recpies that are public and render them
   function showRecipeList(recipes) {
     const list = document.getElementById("recipe-list");
+    list.innerHTML = "";
     //create lis for all public recipes
     for (const recipe of recipes) {
       if (!recipe.public) {

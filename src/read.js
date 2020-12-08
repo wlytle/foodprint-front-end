@@ -55,11 +55,6 @@ async function showRecipe(recipe) {
   deleteBtn.id = "delete-btn";
   btnDiv.id = recipe.id;
 
-  //listen for clicks to edit individual ingredients
-  table.addEventListener("click", editRecipeIngredient);
-  // handle click on edit or delte buttons -> cud.js
-  btnDiv.addEventListener("click", editOrDeleteRecipe);
-
   btnDiv.append(editBtn, deleteBtn);
   table.appendChild(ingredientList);
   div.append(h1, h4, table, p, img, btnDiv);
@@ -84,6 +79,11 @@ async function showRecipe(recipe) {
   h4.id = "yield";
   p.textContent = recipe.instructions;
   img.src = recipe.image;
+
+  //listen for clicks to edit individual ingredients
+  //table.addEventListener("click", getComparrisons);
+  // handle click on edit or delte buttons -> cud.js
+  btnDiv.addEventListener("click", editOrDeleteRecipe);
 }
 // Get ingredient details
 function getRecipeIngredient(id) {
@@ -126,33 +126,29 @@ function showRecipeIngredient(ing) {
       const eut = document.createElement("td");
 
       /// testing modal
-      const popover = document.createElement("BUTTON");
+      const mod = document.createElement("BUTTON");
 
-      popover.className = "btn btn-primary";
-      popover.type = "button";
-      popover.dataset.target = "#exampleModal";
-      popover.dataset.toggle = "modal";
-      popover.textContent = "modal test";
+      mod.className = "btn btn-outline-success";
+      mod.type = "button";
+      mod.dataset.target = `#Modal${ing.id}`;
+      mod.dataset.toggle = "modal";
+      mod.textContent = "Investigate";
 
       let content = "";
       for (const em in ghgEmission) {
-        content += `${em}: ${ghgEmission[em].toFixed(2)} kg of CO<sub>2</sub>Eq 
-        `;
+        content += `<li>${em}: ${ghgEmission[em].toFixed(
+          2
+        )} kg of CO<sub>2</sub>Eq </li>`;
       }
 
-      const modal = buildModal(
-        `Life Cycle Emissions For ${ingredient.name}`,
-        content
-      );
-      ////
+      const modal = buildModal(ing, ghgEmission, content);
 
       ghg.innerHTML = ` ${ghgEmission.total.toFixed(
         2
       )} kg of CO<sub>2</sub>Eq `;
       h2o.textContent = `${water.toFixed(2)} L of water `;
       eut.innerHTML = `${eutrophication.toFixed(2)} g PO<sub>4</sub>eq`;
-      popover.appendChild(ghg);
-      tr.append(recipe, ghg, h2o, eut, popover, modal);
+      tr.append(recipe, ghg, h2o, eut, mod, modal);
     }
 
     //if no data, just say so
@@ -167,13 +163,19 @@ function showRecipeIngredient(ing) {
 }
 
 //connvert ingredient units to kg
-function calculateEmissions(ing) {
+function calculateEmissions(
+  ing,
+  greenhouse = null,
+  water_use = null,
+  eutrophication = null
+) {
   let quantity, h2o, eut;
   let total = 0;
   let ghg = {};
-  let greenhouse = ing.ingredient.greenhouse_gass;
-  let water_use = ing.ingredient.water_use.use;
-  let eutrophication = ing.ingredient.eutrophication.eutrophication;
+  greenhouse = greenhouse || ing.ingredient.greenhouse_gass;
+  water_use = water_use || ing.ingredient.water_use.use;
+  eutrophication =
+    eutrophication || ing.ingredient.eutrophication.eutrophication;
   unit = ing.unit.downcase;
   switch (ing.unit) {
     case "oz":
@@ -250,36 +252,83 @@ function calculateEmissions(ing) {
   return [ghg, h2o, eut];
 }
 
-////////////
-////////////////
-///////////////
-// come back to this!
-function editRecipeIngredient(e) {
-  console.log(e.target);
-  //e.target.popover();
+function buildModal(ing, originalGhg, content) {
+  const modal = `<div class="modal fade" id="Modal${ing.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Life Cycle Emissions For ${ing.whole_line}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <ul>${content}</ul>
+              <hr>
+              <ul id="options${ing.id}">
+
+              </ul>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+
+  const div = document.createElement("div");
+  div.dataset.id = ing.id;
+  div.innerHTML = modal;
+
+  getComparrisons(ing, originalGhg);
+  return div;
 }
 
-function buildModal(title, content) {
-  const modal = `<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">${title}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-       <p>${content}</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>`;
-  const div = document.createElement("div");
-  div.innerHTML = modal;
-  return div;
+//make fetch request with recipeingredient ing and make custome action to return
+//ing.ingredient_typ.ingredients, then feed those through ghg calcs and make thema vaialble to choose form
+function getComparrisons(ing, originalGhg) {
+  //get list in modal to update
+  // const compList = e.target.nextElementSibling.querySelector("#options");
+  // const id = e.target.nextElementSibling.dataset.id;
+
+  //if (e.target.tagName !== "BUTTON") return;
+  const configObj = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      //"X-CSRF-Token": browser.cookies.get(),
+    },
+    credentials: "include",
+    "Access-Control-Allow-Credentials": true,
+  };
+  fetch("http://localhost:3000/recipe_ingredient/types/" + ing.id, configObj)
+    .then((resp) => resp.json())
+    .then((ingredients) => {
+      console.log(ingredients);
+      //generate information about other ingredients of same type to show in modal
+      //get modal list
+      const ul = document.getElementById(`options${ing.id}`);
+      if (ingredients.length === 1) return;
+
+      ingredients.forEach((ingredient) => {
+        if (!ingredient.greenhouse_gass) return;
+        const li = document.createElement("li");
+
+        const [ghg, h2o, eut] = calculateEmissions(
+          ing,
+          ingredient?.greenhouse_gass,
+          ingredient?.water_use?.use,
+          ingredient?.eutrophication?.eutrophication
+        );
+        //debugger;
+        const message = `${ingredient.name} will change emmisions by ${(
+          ghg.total - originalGhg.total
+        ).toFixed(2)} kg of CO<sub>2</sub>Eq`;
+
+        li.textContent = message;
+        ul.appendChild(li);
+      });
+    });
 }

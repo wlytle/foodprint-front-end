@@ -1,4 +1,10 @@
-document.addEventListener("DOMContentLoaded", showLogin);
+document.addEventListener("DOMContentLoaded", () => {
+  showLogin();
+
+  //listen for clicks imn the navbar
+  const nav = document.getElementById("nav-bar");
+  nav.addEventListener("click", handleNavClicks);
+});
 
 //show the initial login form
 function showLogin() {
@@ -43,7 +49,7 @@ function showLogin() {
   loginBtn.id = "login-btn";
   signupBtn.textContent = "signup";
   signupBtn.className = "btn btn-link btn-sm";
-  signupBtn.id = "signup-btn";
+  signupBtn.id = "signup-tag";
   signupBtn.type = "submit";
   guestBtn.textContent = "Continue as guest";
   guestBtn.className = "btn btn-link btn-sm";
@@ -80,7 +86,21 @@ function handleSignupClick(e) {
       e.currentTarget.classList.add("was-validated");
       break;
     case "gues-btn":
-      //login as guest
+      loginUser(e, "guest", "guest password");
+      break;
+    case "signup-tag":
+      //create new user
+      break;
+    default:
+      return;
+  }
+}
+
+function handleNavClicks(e) {
+  if (e.target.tagName !== "BUTTON") return;
+  switch (e.target.id) {
+    case "log-out-btn":
+      logOutUser();
       break;
     case "signup-btn":
       //create new user
@@ -91,11 +111,11 @@ function handleSignupClick(e) {
 }
 
 //Log in the user
-function loginUser({ target }) {
+function loginUser({ target }, g = null, gp = null) {
   const user = target.parentNode;
   const body = {
-    username: user.username.value,
-    password: user.password.value,
+    username: g || user.username.value,
+    password: gp || user.password.value,
   };
 
   const configObj = {
@@ -111,23 +131,47 @@ function loginUser({ target }) {
   };
   fetch("http://localhost:3000/sessions", configObj)
     .then((resp) => resp.json())
-    .then((session) => {
-      console.log(session);
-      if (session.error) {
+    .then((user) => {
+      if (user.error) {
         const username = document.getElementById("user-input");
         const password = document.getElementById("password-input");
 
         username.setCustomValidity("invalid");
         password.setCustomValidity("invalid");
+      } else {
+        // send the user on to the next thing
+        redirectAfterLogIn(user);
       }
-
-      redirectAfterLogIn();
     });
 }
 
-function redirectAfterLogIn() {
+function redirectAfterLogIn(user) {
+  //update nav bar
+  const main = document.getElementById("main-show");
+  const nav = document.getElementById("nav-bar");
+  const signup = document.getElementById("signup-btn");
+  const logout = document.getElementById("login-btn");
+  const welcome = document.createElement("h5");
+  // temp
+  const h1 = document.createElement("h1");
+
+  signup.remove();
+  welcome.textContent = `Welocme ${user.username} `;
+  welcome.id = "welcome-tag";
+  nav.prepend(welcome);
+  logout.textContent = "Log Out";
+  logout.id = "log-out-btn";
+  h1.textContent = "Woo Hoo!";
+
+  main.innerHTML = "";
+  main.appendChild(h1);
+}
+
+function logOutUser() {
+  const main = document.getElementById("main-show");
+
   const configObj = {
-    method: "GET",
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -136,9 +180,26 @@ function redirectAfterLogIn() {
     credentials: "include",
     "Access-Control-Allow-Credentials": true,
   };
-  fetch("http://localhost:3000/UserRecipes", configObj)
-    .then((resp) => resp.json())
-    .then((test) => {
-      console.log(test);
-    });
+  fetch("http://localhost:3000/sessions", configObj)
+    .then(() => {
+      //show loginscreen and reset login button and recreate isng up button
+
+      const login = document.getElementById("log-out-btn");
+      const signup = document.createElement("BUTTON");
+      const welcome = document.getElementById("welcome-tag");
+      const nav = document.getElementById("nav-bar");
+
+      signup.id = "signup-btn";
+      signup.className = "btn btn-outline-success my-2 my-sm-0";
+      signup.textContent = "Sign Up";
+      login.textContent = "Login";
+      login.id = "login-btn";
+
+      welcome.remove();
+      nav.appendChild(signup);
+      //clear out the screen
+      main.innerHTML = "";
+      showLogin();
+    })
+    .catch((err) => console.log(err.message));
 }
