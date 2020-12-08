@@ -89,8 +89,8 @@ async function showRecipe(recipe) {
 function getRecipeIngredient(id) {
   return fetch("http://localhost:3000/recipe_ingredients/" + id)
     .then((resp) => resp.json())
-    .then((ing) => showRecipeIngredient(ing))
-    .catch((err) => console.log(err.message));
+    .then((ing) => showRecipeIngredient(ing));
+  //.catch((err) => console.log(err.message));
 }
 
 // loop through all recipe ingrdients, pull out qutnity, ingredienet and emission data
@@ -135,10 +135,13 @@ function showRecipeIngredient(ing) {
       mod.textContent = "Investigate";
 
       let content = "";
-      for (const em in ghgEmission) {
-        content += `<li>${em}: ${ghgEmission[em].toFixed(
-          2
-        )} kg of CO<sub>2</sub>Eq </li>`;
+      for (let em in ghgEmission) {
+        let stage = em.replace(/(_)/gi, " ");
+
+        stage = stage.charAt(0).toUpperCase() + stage.slice(1);
+        content += `<li class="list-group-item">${stage}: ${ghgEmission[
+          em
+        ].toFixed(2)} kg of CO<sub>2</sub>Eq </li>`;
       }
 
       const modal = buildModal(ing, ghgEmission, content);
@@ -148,7 +151,7 @@ function showRecipeIngredient(ing) {
       )} kg of CO<sub>2</sub>Eq `;
       h2o.textContent = `${water.toFixed(2)} L of water `;
       eut.innerHTML = `${eutrophication.toFixed(2)} g PO<sub>4</sub>eq`;
-      tr.append(recipe, ghg, h2o, eut, mod, modal);
+      tr.append(recipe, ghg, h2o, eut, mod);
     }
 
     //if no data, just say so
@@ -193,6 +196,7 @@ function calculateEmissions(
       quantity = +ing.quantity / 203;
       break;
     case "tbs":
+    case "tbsp":
     case "tablespoon":
     case "tablespoons":
       quantity = +ing.quantity / 67.7;
@@ -263,15 +267,14 @@ function buildModal(ing, originalGhg, content) {
                 </button>
               </div>
               <div class="modal-body">
-                  <ul>${content}</ul>
+                  <ul class="list-group">${content}</ul>
               <hr>
-              <ul id="options${ing.id}">
+              <ul class="list-group" id="options${ing.id}">
 
               </ul>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
               </div>
             </div>
           </div>
@@ -282,17 +285,19 @@ function buildModal(ing, originalGhg, content) {
   div.innerHTML = modal;
 
   getComparrisons(ing, originalGhg);
-  return div;
+  body = document.getElementById("body");
+  body.appendChild(div);
+  //return div;
 }
 
 //make fetch request with recipeingredient ing and make custome action to return
 //ing.ingredient_typ.ingredients, then feed those through ghg calcs and make thema vaialble to choose form
 function getComparrisons(ing, originalGhg) {
   //get list in modal to update
-  // const compList = e.target.nextElementSibling.querySelector("#options");
-  // const id = e.target.nextElementSibling.dataset.id;
+  // Bail if current ingrredient doesn't have a type
 
-  //if (e.target.tagName !== "BUTTON") return;
+  if (ing.ingredient_type.name === "") return;
+
   const configObj = {
     method: "GET",
     headers: {
@@ -310,11 +315,20 @@ function getComparrisons(ing, originalGhg) {
       //generate information about other ingredients of same type to show in modal
       //get modal list
       const ul = document.getElementById(`options${ing.id}`);
+      //listen to it!
+      ul.addEventListener("click", (e) => {
+        replaceIngredient(e);
+      });
       if (ingredients.length === 1) return;
 
       ingredients.forEach((ingredient) => {
-        if (!ingredient.greenhouse_gass) return;
+        if (
+          !ingredient.greenhouse_gass ||
+          ingredient.name === ing.ingredient.name
+        )
+          return;
         const li = document.createElement("li");
+        li.className = "list-group-item";
 
         const [ghg, h2o, eut] = calculateEmissions(
           ing,
@@ -322,13 +336,54 @@ function getComparrisons(ing, originalGhg) {
           ingredient?.water_use?.use,
           ingredient?.eutrophication?.eutrophication
         );
-        //debugger;
-        const message = `${ingredient.name} will change emmisions by ${(
+        //format change message
+        let delta;
+        let message;
+        ghg.total - originalGhg.total > 0
+          ? (delta = "increase")
+          : (delta = "decrease");
+
+        if (ghg.total - originalGhg.total === 0) {
+          message = `${ingredient.name} will not change emmisions`;
+        }
+        message = `${ingredient.name} will ${delta} emmisions by ${Math.abs(
           ghg.total - originalGhg.total
         ).toFixed(2)} kg of CO<sub>2</sub>Eq`;
 
-        li.textContent = message;
+        //add a buton to swap out ingredients
+        const btn = document.createElement("BUTTON");
+        btn.id = ingredient.id;
+        btn.className = "btn btn-outline-success float-right";
+        btn.textContent = "Replace";
+
+        li.innerHTML = message;
+        li.appendChild(btn);
         ul.appendChild(li);
       });
     });
+}
+
+//replace ingredient with option from modal
+function replaceIngredient(e, ing) {
+  if (e.target.textContent !== "Replace") return;
+  const configObj = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ new_ingredient: e.target.id }),
+    credentials: "include",
+    "Access-Control-Allow-Credentials": true,
+  };
+
+  const id = e.currentTarget.id.replace("options", "");
+
+  fetch("http://localhost:3000/recipe_ingredients/" + id, configObj)
+    .then((resp) => resp.json())
+    .then((recipe) => {
+      showRecipe(recipe);
+      $(`#Modal${id}`).modal("hide");
+    })
+    .catch((err) => console.log(err.message));
 }

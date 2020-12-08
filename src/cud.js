@@ -186,16 +186,16 @@ function addIngredientInput(ing = null) {
   rowdiv2.className = "form-row";
   row1_coldiv1.className = "form-group col";
   row1_coldiv2.className = "form-group col";
-  row1_coldiv3.className = "form-group col";
+  row1_coldiv3.className = "form-group col-4";
   row1_coldiv4.className = "form-group col";
-  row1_coldiv5.className = "form-group col-4";
+  row1_coldiv5.className = "form-group col";
   row1_coldiv6.className = "form-group col";
 
   row2_coldiv1.className = "form-group col";
   row2_coldiv2.className = "form-group col";
-  row2_coldiv3.className = "form-group col";
+  row2_coldiv3.className = "form-group col-4";
   row2_coldiv4.className = "form-group col";
-  row2_coldiv5.className = "form-group col-4";
+  row2_coldiv5.className = "form-group col";
   row2_coldiv6.className = "form-group col";
 
   //create form elements
@@ -250,13 +250,13 @@ function addIngredientInput(ing = null) {
   row1_coldiv2.appendChild(unitLabel);
   row1_coldiv3.appendChild(ingredientLabel);
   row1_coldiv4.appendChild(typeLabel);
-  row1_coldiv5.appendChild(displayLabel);
+  //row1_coldiv5.appendChild(displayLabel);
 
   row2_coldiv1.append(quantity, quantityValid);
   row2_coldiv2.appendChild(unit);
   row2_coldiv3.append(ingredient, ingValid);
   row2_coldiv4.appendChild(type);
-  row2_coldiv5.append(display, displayValid);
+  //row2_coldiv5.append(display, displayValid);
   //dont add remove button to first ingredient
   const yield = document.getElementById("yield-div");
   if (form.lastElementChild !== yield) {
@@ -268,7 +268,7 @@ function addIngredientInput(ing = null) {
     row1_coldiv2,
     row1_coldiv3,
     row1_coldiv4,
-    row1_coldiv5,
+    //row1_coldiv5,
     row1_coldiv6
   );
   rowdiv2.append(
@@ -276,7 +276,7 @@ function addIngredientInput(ing = null) {
     row2_coldiv2,
     row2_coldiv3,
     row2_coldiv4,
-    row2_coldiv5,
+    //row2_coldiv5,
     row2_coldiv6
   );
 
@@ -325,7 +325,7 @@ function getIngredientParams(currentTarget) {
         ingredient: ing.value.trim(),
         quantity: currentTarget.quantity[i].value.trim(),
         unit: currentTarget.unit[i].value.trim(),
-        whole_line: currentTarget.whole_line[i].value.trim(),
+        //whole_line: currentTarget.whole_line[i].value.trim(),
         ingredient_type: currentTarget.type[i].value.trim(),
       };
     }
@@ -334,7 +334,7 @@ function getIngredientParams(currentTarget) {
       ingredient: currentTarget.ingredient.value.trim(),
       quantity: currentTarget.quantity.value.trim(),
       unit: currentTarget.unit.value.trim(),
-      whole_line: currentTarget.whole_line.value.trim(),
+      //whole_line: currentTarget.whole_line.value.trim(),
       ingredient_type: currentTarget.type.value.trim(),
     };
   }
