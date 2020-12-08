@@ -287,7 +287,6 @@ function buildModal(ing, originalGhg, content) {
   getComparrisons(ing, originalGhg);
   body = document.getElementById("body");
   body.appendChild(div);
-  //return div;
 }
 
 //make fetch request with recipeingredient ing and make custome action to return
@@ -364,7 +363,7 @@ function getComparrisons(ing, originalGhg) {
 }
 
 //replace ingredient with option from modal
-function replaceIngredient(e, ing) {
+function replaceIngredient(e) {
   if (e.target.textContent !== "Replace") return;
   const configObj = {
     method: "PATCH",
