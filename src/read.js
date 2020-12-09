@@ -15,9 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //show recipe after being selected from the side bar
 function getRecipe({ target }, id = null) {
-  RECIPE_TOTALS.ghg = 0;
-  RECIPE_TOTALS.h2o = 0;
-  RECIPE_TOTALS.eut = 0;
   if (target.tagName != "BUTTON") return;
   id = id || target.dataset.id;
   return fetch("http://localhost:3000/recipes/" + id)
@@ -31,9 +28,16 @@ function getRecipe({ target }, id = null) {
 
 //Display recipe in the center
 async function showRecipe(recipe) {
+  RECIPE_TOTALS.ghg = 0;
+  RECIPE_TOTALS.h2o = 0;
+  RECIPE_TOTALS.eut = 0;
   const div = document.getElementById("main-show");
+  div.innerHTML = "";
+
   const h1 = document.createElement("h1");
   const h4 = document.createElement("h4");
+  const h2 = document.createElement("h2");
+  const h5 = document.createElement("h5");
   const table = document.createElement("table");
   const ingredientList = document.createElement("tbody");
   const p = document.createElement("p");
@@ -42,7 +46,6 @@ async function showRecipe(recipe) {
   const deleteBtn = document.createElement("BUTTON");
   const btnDiv = document.createElement("div");
 
-  div.innerHTML = "";
   ingredientList.id = "ing-list";
   table.className = "table table-hover";
   img.className = "img-fluid rounded";
@@ -57,7 +60,7 @@ async function showRecipe(recipe) {
 
   btnDiv.append(editBtn, deleteBtn);
   table.appendChild(ingredientList);
-  div.append(h1, h4, table, p, img, btnDiv);
+  div.append(h1, h2, h4, h5, table, p, img, btnDiv);
 
   //store all ingredient promsies in an array
   const promises = [];
@@ -69,14 +72,18 @@ async function showRecipe(recipe) {
   await Promise.all(promises);
 
   //after all ingredients accessed and added to DOM dispaly totals
-  h1.innerHTML = `${recipe.title} - ${RECIPE_TOTALS.ghg.toFixed(
-    2
-  )} kg of CO<sub>2</sub>Eq`;
+  h1.innerHTML = `${recipe.title}`;
   h1.id = "title";
-  h4.innerHTML = `Serves ${recipe.yield} - ${(
-    RECIPE_TOTALS.ghg / recipe.yield
-  ).toFixed(2)} kg CO<sub>2</sub>Eq per serving`;
+  h2.innerHTML = `${RECIPE_TOTALS.ghg.toFixed(
+    2
+  )} kg of CO<sub>2</sub>Eq & ${RECIPE_TOTALS.h2o.toFixed(2)} L embedded water`;
+  h4.innerHTML = `Serves ${recipe.yield}`;
   h4.id = "yield";
+  h5.innerHTML = `${(RECIPE_TOTALS.ghg / recipe.yield).toFixed(
+    2
+  )} kg CO<sub>2</sub>Eq  & ${(RECIPE_TOTALS.h2o / recipe.yield).toFixed(
+    2
+  )} L of water per serving`;
   p.textContent = recipe.instructions;
   img.src = recipe.image;
 
@@ -145,6 +152,11 @@ function showRecipeIngredient(ing) {
       }
 
       const modal = buildModal(ing, ghgEmission, content);
+      //look for modal click
+      // mod.addEventListener(
+      //   "click",
+      //   buildModal.bind(null, ing, ghgEmission, content)
+      // );
 
       ghg.innerHTML = ` ${ghgEmission.total.toFixed(
         2
@@ -175,11 +187,13 @@ function calculateEmissions(
   let quantity, h2o, eut;
   let total = 0;
   let ghg = {};
+
   greenhouse = greenhouse || ing.ingredient.greenhouse_gass;
   water_use = water_use || ing.ingredient.water_use.use;
   eutrophication =
     eutrophication || ing.ingredient.eutrophication.eutrophication;
   unit = ing.unit.downcase;
+
   switch (ing.unit) {
     case "oz":
     case "ounce":
@@ -285,8 +299,8 @@ function buildModal(ing, originalGhg, content) {
   div.innerHTML = modal;
 
   getComparrisons(ing, originalGhg);
-  body = document.getElementById("body");
-  body.appendChild(div);
+  const maindiv = document.getElementById("main-show");
+  maindiv.appendChild(div);
 }
 
 //make fetch request with recipeingredient ing and make custome action to return
@@ -381,8 +395,8 @@ function replaceIngredient(e) {
   fetch("http://localhost:3000/recipe_ingredients/" + id, configObj)
     .then((resp) => resp.json())
     .then((recipe) => {
-      showRecipe(recipe);
       $(`#Modal${id}`).modal("hide");
+      showRecipe(recipe);
     })
     .catch((err) => console.log(err.message));
 }

@@ -242,7 +242,7 @@ function addIngredientInput(ing = null) {
   display.required = true;
   display.value = displayValue;
   removeBtn.textContent = "Remove";
-  removeBtn.className = "btn btn-danger";
+  removeBtn.className = "btn btn-danger remove-btn";
   removeBtn.id = removeId;
   removeBtn.dataset.id = ing?.id;
 
@@ -259,7 +259,8 @@ function addIngredientInput(ing = null) {
   //row2_coldiv5.append(display, displayValid);
   //dont add remove button to first ingredient
   const yield = document.getElementById("yield-div");
-  if (form.lastElementChild !== yield) {
+
+  if (ing || form.lastElementChild !== yield) {
     row2_coldiv6.appendChild(removeBtn);
   }
 
@@ -286,12 +287,25 @@ function addIngredientInput(ing = null) {
   form.lastElementChild === yield
     ? form.append(rowdiv1, rowdiv2)
     : form.insertBefore(rowdiv2, addbtn);
+
+  lastBtn();
+}
+
+//check if there is only one ingredient left and update button bissiblity
+function lastBtn() {
+  const removeBtns = document.getElementsByClassName("remove-btn");
+  if (removeBtns.length === 1) {
+    removeBtns[0].hidden = true;
+  } else if (removeBtns.length > 1) {
+    removeBtns[0].hidden = false;
+  }
 }
 
 // remove an ingredient line from form
 function removeIngredientInput(target) {
   //Remove input row with button, row with labels and surroundng div
   target.parentNode.parentNode.remove();
+  lastBtn();
 }
 
 //send new recipe data to server and redirect to show recipe
@@ -410,6 +424,7 @@ function deleteRecipe(e) {
       div.innerHTML = "";
       const button = document.querySelector(`button[data-id="${id}"]`);
       button.remove();
+      showAbout();
     })
     .catch((err) => console.log(err.message));
 }
