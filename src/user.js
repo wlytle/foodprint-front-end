@@ -1,12 +1,3 @@
-document.addEventListener("DOMContentLoaded", () => {
-  showAbout();
-  //showLogin();
-
-  //listen for clicks imn the navbar
-  const nav = document.getElementById("nav-bar");
-  nav.addEventListener("click", handleNavClicks);
-});
-
 //show the initial login form
 function showLogin() {
   const div = document.getElementById("main-show");
@@ -110,6 +101,9 @@ function handleNavClicks(e) {
     case "about-btn":
       showAbout();
       break;
+    case "test":
+      test();
+      break;
     default:
       return;
   }
@@ -161,15 +155,15 @@ function redirectAfterLogIn(user) {
   const h1 = document.createElement("h1");
 
   signup.remove();
-  welcome.textContent = `Welocme ${user.username} `;
+  welcome.textContent = `Welcome ${user.username} `;
   welcome.id = "welcome-tag";
+  welcome.className = "welcome";
   nav.prepend(welcome);
   logout.textContent = "Log Out";
   logout.id = "log-out-btn";
-  h1.textContent = "Woo Hoo!";
 
   main.innerHTML = "";
-  main.appendChild(h1);
+  showAbout();
 }
 
 function logOutUser() {

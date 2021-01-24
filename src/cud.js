@@ -339,7 +339,6 @@ function getIngredientParams(currentTarget) {
         ingredient: ing.value.trim(),
         quantity: currentTarget.quantity[i].value.trim(),
         unit: currentTarget.unit[i].value.trim(),
-        //whole_line: currentTarget.whole_line[i].value.trim(),
         ingredient_type: currentTarget.type[i].value.trim(),
       };
     }
@@ -348,7 +347,6 @@ function getIngredientParams(currentTarget) {
       ingredient: currentTarget.ingredient.value.trim(),
       quantity: currentTarget.quantity.value.trim(),
       unit: currentTarget.unit.value.trim(),
-      //whole_line: currentTarget.whole_line.value.trim(),
       ingredient_type: currentTarget.type.value.trim(),
     };
   }
@@ -404,9 +402,41 @@ function handleFormClick(e) {
 
 //handle clicks of edit and delete buttons on show recipe page
 function editOrDeleteRecipe(e) {
-  e.target.id === "edit-btn" ? editRecipe(e) : deleteRecipe(e);
+  switch (e.target.id) {
+    case "edit-btn":
+      editRecipe(e);
+      break;
+    case "delete-btn":
+      deleteRecipe(e);
+      break;
+    case "add-recipe-btn":
+      addNewRecipe(e);
+      break;
+    default:
+      return;
+  }
 }
 
+// Add recipe to users recipes
+function addNewRecipe(e) {
+  const id = e.currentTarget.id;
+  const configObj = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      recipe_id: id,
+    }),
+    credentials: "include",
+    "Access-Control-Allow-Credentials": true,
+  };
+  fetch("http://localhost:3000/user_recipes", configObj)
+    .then((resp) => resp.json())
+    .then(console.log)
+    .catch((err) => console.log(err.message));
+}
 // delete a recipe
 function deleteRecipe(e) {
   if (!confirm("Are you sure you want to delete this recipe?")) return;
@@ -417,6 +447,8 @@ function deleteRecipe(e) {
       "Content-Type": "application/json",
       Accept: "application/json",
     },
+    credentials: "include",
+    "Access-Control-Allow-Credentials": true,
   };
   fetch("http://localhost:3000/recipes/" + id, configObj)
     .then(() => {
@@ -446,6 +478,8 @@ function updateRecipe(e) {
       Accept: "application/json",
     },
     body: JSON.stringify(body),
+    credentials: "include",
+    "Access-Control-Allow-Credentials": true,
   };
 
   fetch("http://localhost:3000/recipes/" + id, configObj)
@@ -463,6 +497,8 @@ function deleteRecipeIngredient(target) {
       "Content-Type": "application/json",
       Accept: "application/json",
     },
+    credentials: "include",
+    "Access-Control-Allow-Credentials": true,
   };
   fetch("http://localhost:3000/recipe_ingredients/" + id, configObj)
     .then(() => {

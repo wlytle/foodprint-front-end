@@ -9,4 +9,4 @@ Video explaning detaild usage of app coming soon!
 
 ## Roadmap  
 
-Future releases will incorperate a login function that allows users to make recipes private and collect recipies that belong to them. 
+Future releases will incorperate a login function that allows users to make recipes private and collect recipes that belong to them. 

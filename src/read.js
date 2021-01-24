@@ -5,14 +5,6 @@ const RECIPE_TOTALS = {
   eut: 0,
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  const list = document.getElementById("recipe-list");
-
-  list.addEventListener("click", (e) => {
-    e.target.id === "create-recipe-btn" ? createRecipe() : getRecipe(e);
-  });
-});
-
 //show recipe after being selected from the side bar
 function getRecipe({ target }, id = null) {
   if (target.tagName != "BUTTON") return;
@@ -44,6 +36,7 @@ async function showRecipe(recipe) {
   const img = document.createElement("img");
   const editBtn = document.createElement("BUTTON");
   const deleteBtn = document.createElement("BUTTON");
+  const addBtn = document.createElement("BUTTON");
   const btnDiv = document.createElement("div");
 
   ingredientList.id = "ing-list";
@@ -56,9 +49,12 @@ async function showRecipe(recipe) {
   deleteBtn.textContent = "Delete Recipe";
   deleteBtn.className = "btn btn-danger";
   deleteBtn.id = "delete-btn";
+  addBtn.textContent = "Add To My Recipes";
+  addBtn.className = "btn btn-success";
+  addBtn.id = "add-recipe-btn";
   btnDiv.id = recipe.id;
 
-  btnDiv.append(editBtn, deleteBtn);
+  btnDiv.append(editBtn, deleteBtn, addBtn);
   table.appendChild(ingredientList);
   div.append(h1, h2, h4, h5, table, p, img, btnDiv);
 
@@ -96,11 +92,11 @@ async function showRecipe(recipe) {
 function getRecipeIngredient(id) {
   return fetch("http://localhost:3000/recipe_ingredients/" + id)
     .then((resp) => resp.json())
-    .then((ing) => showRecipeIngredient(ing));
-  //.catch((err) => console.log(err.message));
+    .then((ing) => showRecipeIngredient(ing))
+    .catch((err) => console.log(err.message));
 }
 
-// loop through all recipe ingrdients, pull out qutnity, ingredienet and emission data
+// loop through all recipe ingrdients, pull out quantity, ingredienet and emission data
 // then append these to the dom if they exist
 function showRecipeIngredient(ing) {
   const ingredient = ing.ingredient;
@@ -324,7 +320,6 @@ function getComparrisons(ing, originalGhg) {
   fetch("http://localhost:3000/recipe_ingredient/types/" + ing.id, configObj)
     .then((resp) => resp.json())
     .then((ingredients) => {
-      console.log(ingredients);
       //generate information about other ingredients of same type to show in modal
       //get modal list
       const ul = document.getElementById(`options${ing.id}`);

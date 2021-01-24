@@ -13,6 +13,19 @@
     background-color: rgba(161, 196, 67, 0.8);
 }
 
+.scroll-container {
+    position: relative;
+    width: 300px;
+}
+
+.scroll-list {
+    position: absolute;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  overflow-y: scroll;
+}
+
+
 .jumbotron {
     background-color: rgba(149, 204, 3, 0.4);
 }
@@ -22,6 +35,10 @@
     background-image: none;
   }
   
+  /* Welcome message */
+  .welcome {
+      padding: 10px;
+  }
   
   .form-control.is-valid, .was-validated .form-control:valid  {
     background-image: none;
