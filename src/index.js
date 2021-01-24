@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  window.DATABASE = "http://food-print-api.herokuapp.com";
   showAbout();
   getAllRecipes();
   checkLoggedIn();
@@ -14,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   nav.addEventListener("click", handleNavClicks);
 });
 
-function handleRecipeListClick() {
+function handleRecipeListClick(e) {
   switch (e.target.id) {
     case "create-recipe-btn":
       createRecipe();
@@ -39,7 +40,7 @@ function checkLoggedIn() {
     credentials: "include",
     "Access-Control-Allow-Credentials": true,
   };
-  fetch("http://localhost:3000/users", configObj)
+  fetch(DATABASE + "/users", configObj)
     .then((resp) => resp.json())
     .then((user) => {
       if (user) redirectAfterLogIn(user);
@@ -49,7 +50,7 @@ function checkLoggedIn() {
 
 //fetch all recipes
 function getAllRecipes() {
-  recipiesUrl = "http://localhost:3000/recipes";
+  recipiesUrl = DATABASE + "/recipes";
   fetch(recipiesUrl)
     .then((resp) => resp.json())
     .then((recipes) => showRecipeList(recipes))

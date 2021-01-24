@@ -9,7 +9,7 @@ const RECIPE_TOTALS = {
 function getRecipe({ target }, id = null) {
   if (target.tagName != "BUTTON") return;
   id = id || target.dataset.id;
-  return fetch("http://localhost:3000/recipes/" + id)
+  return fetch(DATABASE + "/recipes/" + id)
     .then((resp) => resp.json())
     .then((recipe) => {
       // if call is coming from nav bar, render the rcipe if its coming from an edit button render the form
@@ -90,7 +90,7 @@ async function showRecipe(recipe) {
 }
 // Get ingredient details
 function getRecipeIngredient(id) {
-  return fetch("http://localhost:3000/recipe_ingredients/" + id)
+  return fetch(DATABASE + "/recipe_ingredients/" + id)
     .then((resp) => resp.json())
     .then((ing) => showRecipeIngredient(ing))
     .catch((err) => console.log(err.message));
@@ -148,11 +148,6 @@ function showRecipeIngredient(ing) {
       }
 
       const modal = buildModal(ing, ghgEmission, content);
-      //look for modal click
-      // mod.addEventListener(
-      //   "click",
-      //   buildModal.bind(null, ing, ghgEmission, content)
-      // );
 
       ghg.innerHTML = ` ${ghgEmission.total.toFixed(
         2
@@ -317,9 +312,10 @@ function getComparrisons(ing, originalGhg) {
     credentials: "include",
     "Access-Control-Allow-Credentials": true,
   };
-  fetch("http://localhost:3000/recipe_ingredient/types/" + ing.id, configObj)
+  fetch(DATABASE + "/recipe_ingredient/types/" + ing.id, configObj)
     .then((resp) => resp.json())
     .then((ingredients) => {
+      debugger;
       //generate information about other ingredients of same type to show in modal
       //get modal list
       const ul = document.getElementById(`options${ing.id}`);
@@ -387,7 +383,7 @@ function replaceIngredient(e) {
 
   const id = e.currentTarget.id.replace("options", "");
 
-  fetch("http://localhost:3000/recipe_ingredients/" + id, configObj)
+  fetch(DATABASE + "/recipe_ingredients/" + id, configObj)
     .then((resp) => resp.json())
     .then((recipe) => {
       $(`#Modal${id}`).modal("hide");

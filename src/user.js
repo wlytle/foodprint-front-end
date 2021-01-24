@@ -82,7 +82,7 @@ function handleSignupClick(e) {
       loginUser(e, "guest", "guest password");
       break;
     case "signup-tag":
-      //create new user
+      signUp();
       break;
     default:
       return;
@@ -122,13 +122,10 @@ function loginUser({ target }, g = null, gp = null) {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      //"X-CSRF-Token": browser.cookies.get(),
     },
     body: JSON.stringify(body),
-    credentials: "include",
-    "Access-Control-Allow-Credentials": true,
   };
-  fetch("http://localhost:3000/sessions", configObj)
+  fetch(DATABASE + "/sessions", configObj)
     .then((resp) => resp.json())
     .then((user) => {
       if (user.error) {
@@ -179,7 +176,7 @@ function logOutUser() {
     credentials: "include",
     "Access-Control-Allow-Credentials": true,
   };
-  fetch("http://localhost:3000/sessions", configObj)
+  fetch(DATABASE + "/sessions", configObj)
     .then(() => {
       //show loginscreen and reset login button and recreate isng up button
 

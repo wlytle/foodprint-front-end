@@ -321,7 +321,7 @@ function addNewRecipe({ currentTarget }) {
     },
     body: JSON.stringify(body),
   };
-  fetch("http://localhost:3000/recipes", configObj)
+  fetch(DATABASE + "/recipes", configObj)
     .then((resp) => resp.json())
     .then((recipe) => {
       getAllRecipes();
@@ -432,7 +432,7 @@ function addNewRecipe(e) {
     credentials: "include",
     "Access-Control-Allow-Credentials": true,
   };
-  fetch("http://localhost:3000/user_recipes", configObj)
+  fetch(DATABASE + "/user_recipes", configObj)
     .then((resp) => resp.json())
     .then(console.log)
     .catch((err) => console.log(err.message));
@@ -450,7 +450,7 @@ function deleteRecipe(e) {
     credentials: "include",
     "Access-Control-Allow-Credentials": true,
   };
-  fetch("http://localhost:3000/recipes/" + id, configObj)
+  fetch(DATABASE + "/recipes/" + id, configObj)
     .then(() => {
       const div = document.getElementById("main-show");
       div.innerHTML = "";
@@ -482,7 +482,7 @@ function updateRecipe(e) {
     "Access-Control-Allow-Credentials": true,
   };
 
-  fetch("http://localhost:3000/recipes/" + id, configObj)
+  fetch(DATABASE + "/recipes/" + id, configObj)
     .then((resp) => resp.json())
     .then((recipe) => showRecipe(recipe));
 }
@@ -500,7 +500,7 @@ function deleteRecipeIngredient(target) {
     credentials: "include",
     "Access-Control-Allow-Credentials": true,
   };
-  fetch("http://localhost:3000/recipe_ingredients/" + id, configObj)
+  fetch(DATABASE + "/recipe_ingredients/" + id, configObj)
     .then(() => {
       removeIngredientInput(target);
     })
