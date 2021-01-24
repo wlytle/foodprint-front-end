@@ -262,7 +262,6 @@ function addIngredientInput(ing = null) {
   //row2_coldiv5.append(display, displayValid);
   //dont add remove button to first ingredient
   const yield = document.getElementById("yield-div");
-
   if (ing || form.lastElementChild !== yield) {
     row2_coldiv6.appendChild(removeBtn);
   }
@@ -287,6 +286,7 @@ function addIngredientInput(ing = null) {
   //append ingredient item in correct location
   const addbtn = document.getElementById("add-btn-div");
 
+  // only add form labels to the first line of new ingredients
   form.lastElementChild === yield
     ? form.append(rowdiv1, rowdiv2)
     : form.insertBefore(rowdiv2, addbtn);
@@ -297,9 +297,7 @@ function addIngredientInput(ing = null) {
 //check if there is only one ingredient left and update button bissiblity
 function lastBtn() {
   const removeBtns = document.getElementsByClassName("remove-btn");
-  if (removeBtns.length === 1) {
-    removeBtns[0].hidden = true;
-  } else if (removeBtns.length > 1) {
+  if (removeBtns.length > 1) {
     removeBtns[0].hidden = false;
   }
 }

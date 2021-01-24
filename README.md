@@ -5,7 +5,7 @@ This project sreves as a javascript based front end for the foodprint-api https:
 Fork and clone this repo as well as the api's repo: https://github.com/wlytle/foodprint-api follow the installation instructions for that repo. Run `http-server` to host the app on localhost:8080/ Note: The backend is set up to only serve localhost:8080. 
 
 ## usage
-Video explaning detaild usage of app coming soon!
+https://youtu.be/ngks1QA23Pw
 
 ## Roadmap  
 

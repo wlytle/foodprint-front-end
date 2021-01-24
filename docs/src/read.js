@@ -84,7 +84,7 @@ async function showRecipe(recipe) {
   img.src = recipe.image;
 
   //listen for clicks to edit individual ingredients
-  //table.addEventListener("click", getComparrisons);
+
   // handle click on edit or delte buttons -> cud.js
   btnDiv.addEventListener("click", editOrDeleteRecipe);
 }
@@ -374,8 +374,6 @@ function replaceIngredient(e) {
       Accept: "application/json",
     },
     body: JSON.stringify({ new_ingredient: e.target.id }),
-    credentials: "include",
-    "Access-Control-Allow-Credentials": true,
   };
 
   const id = e.currentTarget.id.replace("options", "");

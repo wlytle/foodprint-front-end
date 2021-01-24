@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  window.DATABASE =
-    "https://cors-anywhere.herokuapp.com/http://food-print-api.herokuapp.com";
+  window.DATABASE = "http://localhost:3000";
+  // "https://cors-anywhere.herokuapp.com/http://food-print-api.herokuapp.com";
   showAbout();
   getAllRecipes();
   checkLoggedIn();
@@ -71,7 +71,7 @@ function showRecipeList(recipes) {
   showBtn.id = "toggle-show-btn";
   showBtn.className = "list-group-item list-group-item-action list-highlight";
   showBtn.textContent = "Show My Recipes";
-  list.append(button, showBtn);
+  list.append(button); //Add in show button when user auth is set up
   //create list for all public recipes
   for (const recipe of recipes) {
     if (!recipe.public) {
