@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  window.DATABASE = "http://food-print-api.herokuapp.com";
+  window.DATABASE =
+    "https://cors-anywhere.herokuapp.com/http://food-print-api.herokuapp.com";
   showAbout();
   getAllRecipes();
   checkLoggedIn();
