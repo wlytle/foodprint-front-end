@@ -309,13 +309,10 @@ function getComparrisons(ing, originalGhg) {
       Accept: "application/json",
       //"X-CSRF-Token": browser.cookies.get(),
     },
-    credentials: "include",
-    "Access-Control-Allow-Credentials": true,
   };
   fetch(DATABASE + "/recipe_ingredient/types/" + ing.id, configObj)
     .then((resp) => resp.json())
     .then((ingredients) => {
-      debugger;
       //generate information about other ingredients of same type to show in modal
       //get modal list
       const ul = document.getElementById(`options${ing.id}`);

@@ -100,11 +100,14 @@ function createRecipe(recipe = null) {
   image.className = "form-control";
   image.value = imageValue;
   publicCheckLabel.className = "form-check-label";
+  publicCheckLabel.hidden = true;
   publicCheck.type = "checkbox";
   publicCheck.name = "public";
   publicCheck.className = "form-check-input";
   publicCheck.id = "check-box";
-  if (recipe?.public) publicCheck.checked = true;
+  publicCheck.hidden = true;
+  // if (recipe?.public)
+  publicCheck.checked = true;
   submit.type = "submit";
   submit.textContent = submitValue;
   submit.className = "btn btn-primary";
@@ -223,7 +226,7 @@ function addIngredientInput(ing = null) {
   quantity.placeholder = "3";
   quantity.name = "quantity";
   quantity.className = "form-control";
-  quantity.required = true;
+  // quantity.required = true;
   quantity.value = quantityValue;
   unitLabel.textContent = "Units";
   unit.placeholder = "cloves";
@@ -429,8 +432,6 @@ function addNewRecipe(e) {
     body: JSON.stringify({
       recipe_id: id,
     }),
-    credentials: "include",
-    "Access-Control-Allow-Credentials": true,
   };
   fetch(DATABASE + "/user_recipes", configObj)
     .then((resp) => resp.json())
@@ -447,8 +448,6 @@ function deleteRecipe(e) {
       "Content-Type": "application/json",
       Accept: "application/json",
     },
-    credentials: "include",
-    "Access-Control-Allow-Credentials": true,
   };
   fetch(DATABASE + "/recipes/" + id, configObj)
     .then(() => {
@@ -478,8 +477,6 @@ function updateRecipe(e) {
       Accept: "application/json",
     },
     body: JSON.stringify(body),
-    credentials: "include",
-    "Access-Control-Allow-Credentials": true,
   };
 
   fetch(DATABASE + "/recipes/" + id, configObj)
@@ -497,8 +494,6 @@ function deleteRecipeIngredient(target) {
       "Content-Type": "application/json",
       Accept: "application/json",
     },
-    credentials: "include",
-    "Access-Control-Allow-Credentials": true,
   };
   fetch(DATABASE + "/recipe_ingredients/" + id, configObj)
     .then(() => {

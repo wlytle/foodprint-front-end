@@ -35,10 +35,7 @@ function checkLoggedIn() {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      //"X-CSRF-Token": browser.cookies.get(),
     },
-    credentials: "include",
-    "Access-Control-Allow-Credentials": true,
   };
   fetch(DATABASE + "/users", configObj)
     .then((resp) => resp.json())
